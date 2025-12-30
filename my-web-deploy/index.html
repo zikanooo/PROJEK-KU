@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Deploy Vercel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            width: 70px;
+            height: 70px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+        }
+        
+        .logo i {
+            font-size: 32px;
+            color: white;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 15px;
+        }
+        
+        .url-preview {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            font-family: monospace;
+            border: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .url-preview i {
+            color: #667eea;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .url-input {
+            display: flex;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        
+        .url-prefix {
+            background: #f1f3f4;
+            padding: 12px 15px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+        }
+        
+        .file-upload {
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #fafafa;
+        }
+        
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .file-upload i {
+            font-size: 40px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .file-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .file-info.show {
+            display: flex;
+        }
+        
+        .file-details {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 600;
+        }
+        
+        .file-size {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .remove-file {
+            color: #999;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .remove-file:hover {
+            color: #ff4444;
+        }
+        
+        .deploy-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+        
+        .deploy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .deploy-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #d4edda;
+            border-radius: 10px;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result h3 {
+            color: #155724;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result-url {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            word-break: break-all;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+        }
+        
+        .copy-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .view-btn {
+            background: white;
+            color: #007bff;
+            border: 1px solid #ddd;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <h1>Auto Deploy Vercel</h1>
+                <p class="subtitle">Deploy file HTML ke Vercel dengan URL custom</p>
+            </div>
+            
+            <div class="url-preview">
+                <i class="fas fa-link"></i>
+                <span>https://<span id="url-preview">mysite</span>.vercel.app</span>
+            </div>
+            
+            <form id="deploy-form">
+                <div class="form-group">
+                    <label>Nama Website</label>
+                    <div class="url-input">
+                        <div class="url-prefix">https://</div>
+                        <input type="text" id="site-name" placeholder="mysite" value="mysite" required>
+                        <div class="url-prefix">.vercel.app</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>File HTML</label>
+                    <div class="file-upload" id="file-upload-area">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <div style="font-weight: 600; margin-bottom: 8px;">Klik untuk pilih file</div>
+                        <div style="color: #666; margin-bottom: 15px;">Drag & drop file HTML</div>
+                        <div style="background: #667eea; color: white; padding: 10px 20px; border-radius: 8px; display: inline-block;">
+                            Browse Files
+                        </div>
+                        <input type="file" id="file-input" accept=".html" style="display: none;">
+                    </div>
+                    
+                    <div class="file-info" id="file-info">
+                        <i class="fas fa-file-code" style="color: #667eea; font-size: 24px;"></i>
+                        <div class="file-details">
+                            <div class="file-name" id="file-name-display">file.html</div>
+                            <div class="file-size" id="file-size-display">0 KB</div>
+                        </div>
+                        <i class="fas fa-times remove-file" id="remove-file"></i>
+                    </div>
+                </div>
+                
+                <button type="submit" class="deploy-btn" id="deploy-button">
+                    <i class="fas fa-bolt"></i>
+                    <span>Deploy Ke Vercel</span>
+                </button>
+            </form>
+            
+            <div class="result" id="result-section">
+                <h3><i class="fas fa-check-circle"></i> Deploy Berhasil!</h3>
+                <p>Website Anda sudah online:</p>
+                <div class="result-url" id="result-url">https://mysite.vercel.app</div>
+                <div class="action-buttons">
+                    <button class="action-btn copy-btn" id="copy-button">
+                        <i class="far fa-copy"></i> Salin URL
+                    </button>
+                    <button class="action-btn view-btn" id="view-button">
+                        <i class="fas fa-external-link-alt"></i> Lihat
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Auto Deploy Vercel &copy; 2023</p>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+</body>
+</html>
