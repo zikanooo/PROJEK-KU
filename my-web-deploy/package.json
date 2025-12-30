@@ -1,0 +1,10 @@
+{
+  "name": "vercel-auto-deploy",
+  "version": "1.0.0",
+  "description": "Auto deploy HTML files to Vercel",
+  "scripts": {
+    "start": "npx serve ."
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
